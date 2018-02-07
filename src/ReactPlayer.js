@@ -22,12 +22,6 @@ export default class ReactPlayer extends Component {
     return false
   }
   config = getConfig(this.props, defaultProps, true)
-  componentDidMount () {
-    this.progress()
-  }
-  componentWillUnmount () {
-    clearTimeout(this.progressTimeout)
-  }
   shouldComponentUpdate (nextProps) {
     return !isEqual(this.props, nextProps)
   }
@@ -46,30 +40,6 @@ export default class ReactPlayer extends Component {
   seekTo = fraction => {
     if (!this.player) return null
     this.player.seekTo(fraction)
-  }
-  progress = () => {
-    if (this.props.url && this.player && this.player.isReady) {
-      const playedSeconds = this.player.getCurrentTime() || 0
-      const loadedSeconds = this.player.getSecondsLoaded()
-      const duration = this.player.getDuration()
-      if (duration) {
-        const progress = {
-          playedSeconds,
-          played: playedSeconds / duration
-        }
-        if (loadedSeconds !== null) {
-          progress.loadedSeconds = loadedSeconds
-          progress.loaded = loadedSeconds / duration
-        }
-        // Only call onProgress if values have changed
-        if (progress.played !== this.prevPlayed || progress.loaded !== this.prevLoaded) {
-          this.props.onProgress(progress)
-        }
-        this.prevPlayed = progress.played
-        this.prevLoaded = progress.loaded
-      }
-    }
-    this.progressTimeout = setTimeout(this.progress, this.props.progressFrequency)
   }
   getActivePlayer (url) {
     for (let Player of players) {
